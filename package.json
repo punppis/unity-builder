@@ -1,0 +1,38 @@
+{
+  "name": "unity-builder",
+  "version": "1.0.0",
+  "description": "Build server for Unity. Works with Mac, so iOS builds are possible as well. (AI template to continue on)",
+  "main": "src/index.js",
+  "bin": {
+    "unity-builder": "./src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "jest --testPathPattern=tests/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/punppis/unity-builder.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/punppis/unity-builder/issues"
+  },
+  "homepage": "https://github.com/punppis/unity-builder#readme",
+  "dependencies": {
+    "@slack/web-api": "^7.5.0",
+    "axios": "^1.13.5",
+    "commander": "^12.1.0",
+    "dotenv": "^16.4.5",
+    "googleapis": "^144.0.0",
+    "inquirer": "^8.2.6",
+    "jsonwebtoken": "^9.0.2",
+    "smb2": "^0.2.11"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
+  }
+}
