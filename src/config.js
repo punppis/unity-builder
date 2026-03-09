@@ -9,6 +9,8 @@ const config = {
     projectPath: process.env.UNITY_PROJECT_PATH || process.cwd(),
     buildMethodAndroid: process.env.UNITY_BUILD_METHOD_ANDROID || 'BuildScript.BuildAndroid',
     buildMethodIos: process.env.UNITY_BUILD_METHOD_IOS || 'BuildScript.BuildiOS',
+    // Optional: override Unity version from .env (e.g. 2022.3.15f1)
+    version: process.env.UNITY_VERSION || null,
   },
   git: {
     buildsBranch: process.env.BUILDS_BRANCH || 'builds',
@@ -36,6 +38,7 @@ const config = {
     issuerId: process.env.APPLE_ISSUER_ID,
     privateKeyPath: process.env.APPLE_PRIVATE_KEY_PATH,
     bundleId: process.env.APPLE_BUNDLE_ID,
+    teamId: process.env.APPLE_TEAM_ID,
   },
   googlePlay: {
     serviceAccountKeyPath: process.env.GOOGLE_SERVICE_ACCOUNT_KEY_PATH,

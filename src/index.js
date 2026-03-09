@@ -9,6 +9,7 @@ const path = require('path');
 const { runBuildPipeline } = require('./build');
 const git = require('./git');
 const config = require('./config');
+const { runInit } = require('./init/index');
 
 const program = new Command();
 
@@ -16,6 +17,29 @@ program
   .name('unity-builder')
   .description('CLI tool for building Unity projects for Android and iOS')
   .version('1.0.0');
+
+// ─────────────────────────────────────────────────────────────────────────────
+// init command
+// ─────────────────────────────────────────────────────────────────────────────
+program
+  .command('init')
+  .description(
+    'Interactive setup wizard: checks dependencies, detects Unity versions, ' +
+    'configures Google Play and App Store Connect, and writes .env'
+  )
+  .option('--project <path>', 'Path to the Unity project', process.cwd())
+  .option('--env <path>',     'Path to the .env file to create/update', path.join(process.cwd(), '.env'))
+  .action(async (opts) => {
+    try {
+      await runInit({
+        projectPath: opts.project,
+        envPath: opts.env,
+      });
+    } catch (err) {
+      console.error('[unity-builder] Init failed:', err.message);
+      process.exit(1);
+    }
+  });
 
 // ─────────────────────────────────────────────────────────────────────────────
 // build command
@@ -90,3 +114,4 @@ program
   });
 
 program.parse(process.argv);
+

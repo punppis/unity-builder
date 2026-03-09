@@ -2,9 +2,11 @@ const { execSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 const config = require('../config');
+const { fixXcodeProject } = require('../fixes/xcode');
 
 /**
  * Build iOS project using Unity in batch mode, then archive and export with xcodebuild.
+ * Pre-build Xcode fixes are applied automatically after Unity generates the project.
  * @returns {{ ipaPath: string }}
  */
 function buildIos() {
@@ -36,6 +38,21 @@ function buildIos() {
   console.log(`[ios] Log: ${logFile}`);
   execSync(unityCmd, { stdio: 'inherit' });
 
+  // Step 1b: Apply pre-build Xcode fixes (missing refs, duplicate frameworks, etc.)
+  if (fs.existsSync(xcodeProjectPath)) {
+    console.log('[ios] Applying pre-build Xcode project fixes...');
+    try {
+      const fixResult = fixXcodeProject(xcodeProjectPath);
+      if (fixResult.missingRefs > 0 || fixResult.duplicateFrameworks > 0) {
+        console.log(
+          `[ios] Fixed: ${fixResult.missingRefs} missing ref(s), ${fixResult.duplicateFrameworks} duplicate framework(s)`
+        );
+      }
+    } catch (err) {
+      console.warn(`[ios] Xcode fix warning: ${err.message}`);
+    }
+  }
+
   // Step 2: Archive with xcodebuild
   console.log('[ios] Archiving with xcodebuild...');
   const archiveCmd = [
@@ -52,6 +69,7 @@ function buildIos() {
   execSync(archiveCmd, { stdio: 'inherit' });
 
   // Step 3: Write ExportOptions.plist for App Store distribution
+  const teamId = config.apple.teamId || process.env.APPLE_TEAM_ID || '';
   const exportPlist = `<?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -59,7 +77,7 @@ function buildIos() {
   <key>method</key>
   <string>app-store</string>
   <key>teamID</key>
-  <string>${process.env.APPLE_TEAM_ID || ''}</string>
+  <string>${teamId}</string>
   <key>uploadBitcode</key>
   <false/>
   <key>compileBitcode</key>
